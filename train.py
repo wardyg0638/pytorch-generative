@@ -50,26 +50,26 @@ if __name__ == "__main__":
         "--model",
         type=str,
         help="the available models to train",
-        default="nade",
+        default="vq_vae_2",
         choices=list(MODEL_DICT.keys()),
     )
     parser.add_argument(
-        "--epochs", type=int, help="number of training epochs", default=1
+        "--epochs", type=int, help="number of training epochs", default=99999999999999999
     )
     parser.add_argument(
         "--batch-size",
         type=int,
         help="the training and evaluation batch_size",
-        default=128,
+        default=16,
     )
     parser.add_argument(
         "--logdir",
         type=str,
         help="the directory where to log model parameters and TensorBoard metrics",
-        default="/tmp/run",
+        default="/tmp/run2",
     )
     parser.add_argument(
-        "--gpus", type=int, help="number of GPUs to run the model on", default=0
+        "--gpus", type=int, help="number of GPUs to run the model on", default=1
     )
     args = parser.parse_args()
 

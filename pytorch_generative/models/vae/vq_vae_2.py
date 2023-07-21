@@ -18,7 +18,7 @@ from pytorch_generative.models import base
 from pytorch_generative.models.vae import vaes
 
 
-class VectorQuantizedVAE2(base.VariationalAutoEncoder):
+class VectorQuantizedVAE2(base.VQ_VariationalAutoEncoder):
     """The VQ-VAE-2 model with a latent hierarchy of depth 2."""
 
     def __init__(
@@ -109,8 +109,31 @@ class VectorQuantizedVAE2(base.VariationalAutoEncoder):
         xhat = self._decoder_b(torch.cat((self._conv(decoded_t), quantized_b), dim=1))
         return xhat, 0.5 * (vq_loss_b + vq_loss_t) + F.mse_loss(decoded_t, encoded_b)
 
-    def _sample(self, n_samples):
-        raise NotImplementedError("VQ-VAE-2 does not support sampling.")
+    def _sample(self, eval_loader):
+        xhat_list = []
+        x_list = []        
+        for batch in eval_loader:
+            batch = batch if isinstance(batch, (tuple, list)) else (batch, None)
+            x, y = batch
+            # Determine how many images to take from the batch
+            num_images = min(8, x.shape[0])
+            x = x[:num_images].to(self.device)
+            encoded_b = self._encoder_b(x)
+            encoded_t = self._encoder_t(encoded_b)
+            quantized_t, vq_loss_t = self._quantizer_t(encoded_t)
+            quantized_b, vq_loss_b = self._quantizer_b(encoded_b)
+            decoded_t = self._decoder_t(quantized_t)
+            xhat = self._decoder_b(torch.cat((self._conv(decoded_t), quantized_b), dim=1))
+            xhat_list.append(xhat)
+            x_list.append(x)
+            break
+
+        extend_list = []
+        extend_list.extend(x_list)
+        extend_list.extend(xhat_list)
+        # stack all image tensors along the batch dimension
+        res = torch.cat(extend_list, dim=0)
+        return res
 
 
 def reproduce(
@@ -144,9 +167,7 @@ def reproduce(
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:
-        train_loader, test_loader = datasets.get_cifar10_loaders(
-            batch_size, normalize=True
-        )
+        train_loader, test_loader = datasets.get_fabric_loaders(batch_size)
 
     model = models.VectorQuantizedVAE2(
         in_channels=3,
@@ -182,4 +203,4 @@ def reproduce(
         n_gpus=n_gpus,
         device_id=device_id,
     )
-    model_trainer.interleaved_train_and_eval(n_epochs)
+    model_trainer.interleaved_train_and_eval(n_epochs, False)

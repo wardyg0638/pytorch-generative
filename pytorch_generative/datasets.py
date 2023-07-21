@@ -12,6 +12,8 @@ from torch.utils import data
 from torchvision import datasets, transforms
 from torchvision.datasets import utils, vision
 
+from fabric_dataset.basic import FabricDataset
+
 
 def _dynamically_binarize(x):
     return distributions.Bernoulli(probs=x).sample()
@@ -218,5 +220,40 @@ def get_blobs_loaders(batch_size, n_train=1000, n_test=200, n_features=2, n_cent
         batch_size=batch_size,
         shuffle=False,
         num_workers=os.cpu_count(),
+    )
+    return train_loader, test_loader
+
+def get_fabric_loaders(batch_size):
+    """Creates train and test loaders for the fabric dataset.
+
+    Args:
+        batch_size: Batch size to use.
+
+    Returns:
+        Tuple of train_loader, test_loader.
+    """
+    transform = transforms.Compose([
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+    ])
+
+    fabric_dataset = FabricDataset("../datasets/AITEX", transform=transform)
+
+    dataset_size = len(fabric_dataset)
+    train_size = int(0.8 * dataset_size) # Let's say we want to split 80/20
+    test_size = dataset_size - train_size
+    train_dataset, test_dataset = data.random_split(fabric_dataset, [train_size, test_size])
+
+    train_loader = data.DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=4,
+    )
+    test_loader = data.DataLoader(
+        test_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=4,
     )
     return train_loader, test_loader

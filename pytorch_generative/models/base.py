@@ -132,3 +132,18 @@ class VariationalAutoEncoder(GenerativeModel):
     @torch.no_grad()
     def sample(self, n_samples):
         return self._sample_fn(self._sample(n_samples))
+
+    
+
+class VQ_VariationalAutoEncoder(GenerativeModel):
+    def __init__(self, sample_fn=None):
+        super().__init__()
+        self._sample_fn = sample_fn or _default_sample_fn
+
+    @abc.abstractmethod
+    def _sample(self, n_samples):
+        ...
+
+    @torch.no_grad()
+    def sample(self, n_samples):
+        return self._sample(n_samples)
