@@ -223,11 +223,12 @@ def get_blobs_loaders(batch_size, n_train=1000, n_test=200, n_features=2, n_cent
     )
     return train_loader, test_loader
 
-def get_fabric_loaders(batch_size):
+def get_fabric_loaders(batch_size, dataset_name):
     """Creates train and test loaders for the fabric dataset.
 
     Args:
         batch_size: Batch size to use.
+        dataset_name: AITEX  MVTEC  YDFID_1
 
     Returns:
         Tuple of train_loader, test_loader.
@@ -237,7 +238,7 @@ def get_fabric_loaders(batch_size):
         transforms.ToTensor(),
     ])
 
-    fabric_dataset = FabricDataset("../datasets/AITEX", transform=transform)
+    fabric_dataset = FabricDataset(f"/home/u2443177/Dio/fabric_project/datasets/{dataset_name}", transform=transform)
 
     dataset_size = len(fabric_dataset)
     train_size = int(0.8 * dataset_size) # Let's say we want to split 80/20

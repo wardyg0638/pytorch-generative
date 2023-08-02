@@ -167,7 +167,7 @@ def reproduce(
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:
-        train_loader, test_loader = datasets.get_fabric_loaders(batch_size)
+        train_loader, test_loader = datasets.get_fabric_loaders(batch_size, 'AITEX')
 
     model = models.VectorQuantizedVAE2(
         in_channels=3,
