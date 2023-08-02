@@ -40,7 +40,7 @@ def _worker(local_rank, *args):
 def main(args):
     if args.gpus > 1:
         worker_args = args.model, args.epochs, args.batch_size, args.logdir, args.gpus
-        torch.multiprocessing.spawn(_worker, worker_args, nprocs=args.gpus)
+        torch.multiprocessing.spawn(_worker, worker_args)
     MODEL_DICT[args.model].reproduce(args.epochs, args.batch_size, args.logdir)
 
 
