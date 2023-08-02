@@ -167,7 +167,7 @@ def reproduce(
 
     train_loader, test_loader = debug_loader, debug_loader
     if train_loader is None:
-        train_loader, test_loader = datasets.get_fabric_loaders(batch_size, 'AITEX')
+        train_loader, test_loader = datasets.get_fabric_loaders(batch_size, 'YDFID_1')
 
     model = models.VectorQuantizedVAE2(
         in_channels=3,
@@ -203,4 +203,4 @@ def reproduce(
         n_gpus=n_gpus,
         device_id=device_id,
     )
-    model_trainer.interleaved_train_and_eval(n_epochs, False)
+    model_trainer.interleaved_train_and_eval(n_epochs, True)

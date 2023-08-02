@@ -60,13 +60,13 @@ if __name__ == "__main__":
         "--batch-size",
         type=int,
         help="the training and evaluation batch_size",
-        default=16,
+        default=64,
     )
     parser.add_argument(
         "--logdir",
         type=str,
         help="the directory where to log model parameters and TensorBoard metrics",
-        default="/tmp/run2",
+        default="/tmp/run/YDFID_1",
     )
     parser.add_argument(
         "--gpus", type=int, help="number of GPUs to run the model on", default=1
